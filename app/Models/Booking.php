@@ -58,7 +58,7 @@ class Booking extends Model
             self::STATUS_FINDING_DRIVER => 'primary',
             self::STATUS_DRIVER_PICKUP => 'warning',
             self::STATUS_DRIVER_DELIVER => 'success',
-            self::STATUS_ARRIVED => 'warning',
+            self::STATUS_ARRIVED,
             self::STATUS_PAID => 'success',
             self::STATUS_CANCELLED => 'danger',
             default => 'secondary',
