@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Booking extends Model
@@ -28,5 +29,39 @@ class Booking extends Model
         'distance',
         'price',
         'status',
+        'time_estimate',
     ];
+
+    protected $casts = [
+        'latitude_origin' => 'float',
+        'longitude_origin' => 'float',
+        'latitude_destination' => 'float',
+        'longitude_destination' => 'float',
+        'distance' => 'float',
+        'price' => 'float',
+        'time_estimate' => 'integer',
+    ];
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'customer_id');
+    }
+
+    public function driver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'driver_id');
+    }
+
+    public function getStatusColorAttribute(): string
+    {
+        return match ($this->status) {
+            self::STATUS_FINDING_DRIVER => 'primary',
+            self::STATUS_DRIVER_PICKUP => 'warning',
+            self::STATUS_DRIVER_DELIVER => 'success',
+            self::STATUS_ARRIVED => 'warning',
+            self::STATUS_PAID => 'success',
+            self::STATUS_CANCELLED => 'danger',
+            default => 'secondary',
+        };
+    }
 }
