@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BookingResource\Pages;
 use App\Filament\Resources\BookingResource\RelationManagers;
 use App\Models\Booking;
+use App\Models\Driver;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -24,11 +25,24 @@ class BookingResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('customer_id')
-                    ->relationship('customer', 'name')
+                ->relationship('customer', 'name', function ($query) {
+                    return $query->where('role', 'customer');
+                })
                     ->required(),
                 Forms\Components\Select::make('driver_id')
-                    ->relationship('driver', 'name')
-                    ->required(),
+                ->options(function () {
+                    return Driver::with('user')
+                        ->whereHas('user', function ($query) {
+                            $query->where('role', 'driver');
+                        })
+                        ->get()
+                        ->mapWithKeys(function ($driver) {
+                            return [$driver->id => $driver->user->name . '-' . $driver->vehicle_number];
+                        })
+                        ->toArray();
+                })
+                ->nullable()
+                ->label('Driver'),
                 Forms\Components\TextInput::make('latitude_origin')
                     ->required()
                     ->numeric(),
@@ -53,8 +67,16 @@ class BookingResource extends Resource
                 Forms\Components\TextInput::make('price')
                     ->required()
                     ->numeric()
-                    ->prefix('$'),
-                Forms\Components\TextInput::make('status')
+                ->prefix('Rp'),
+            Forms\Components\Select::make('status')
+                ->options([
+                    'finding_driver' => 'Finding Driver',
+                    'driver_pickup' => 'Driver Pickup',
+                    'driver_deliver' => 'Driver Deliver',
+                    'arrived' => 'Arrived',
+                    'paid' => 'Paid',
+                    'cancelled' => 'Cancelled'
+                ])
                     ->required(),
                 Forms\Components\TextInput::make('time_estimate')
                     ->numeric(),
