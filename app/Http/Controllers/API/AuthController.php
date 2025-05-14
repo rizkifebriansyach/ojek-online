@@ -12,6 +12,56 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    //register
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            /**
+             * @example Customer B 
+             */
+            'name' => 'required|string|max:255',
+            /**
+             * @example customer2@gmail.com
+             */
+            'email' => 'required|string|email|unique:users',
+            /**
+             * @example 12345678
+             */
+            'password' => 'required|string|min:8',
+            /**
+             * @example 08888888
+             */
+            'whatsapp' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'data' => ['error' => $validator->errors()]
+            ], 422);
+        }
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'whatsapp' => $request->whatsapp
+        ]);
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        $userData = $user->toArray();
+        $userData['token'] = $token;
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Login success',
+            'data' => $userData
+        ]);
+    }
+
+
     //login
     public function login(Request $request)
     {
