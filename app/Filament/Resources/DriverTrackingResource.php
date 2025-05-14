@@ -47,8 +47,8 @@ class DriverTrackingResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('driver.id')
-                    ->numeric()
+            Tables\Columns\TextColumn::make('driver.user.name')
+                ->label('Driver')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('latitude')
                     ->numeric()
