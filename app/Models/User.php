@@ -54,4 +54,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(Driver::class);
     }
+
+    public function checkCustomer(): bool
+    {
+        return $this->role === 'customer';
+    }
+
+    public function checkDriver(): bool
+    {
+        return $this->role === 'driver';
+    }
 }

@@ -64,4 +64,26 @@ class Booking extends Model
             default => 'secondary',
         };
     }
+
+    public static function hasActiveBooking($customerId):bool
+    {
+        return static::where('customer_id', $customerId)
+            ->whereNotIn('status', [self::STATUS_PAID, self::STATUS_CANCELLED])
+            ->exists();
+    }
+
+    public static function getActiveBooking($userId, $role): ?Booking
+    {
+        $query = self::query();
+
+        if($role === 'customer'){
+            $query->where('customer_id',$userId);
+        }else if($role === 'driver'){
+            $query->where('driver_id',$userId );
+        }
+
+        return $query->whereNotIn('status',[
+            self::STATUS_PAID, self::STATUS_CANCELLED
+        ])->first();
+    }
 }
