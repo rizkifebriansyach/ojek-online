@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
     //register
+    /**
+     * @unauthenticated
+     */
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -63,6 +66,9 @@ class AuthController extends Controller
 
 
     //login
+    /**
+     * @unauthenticated
+     */
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -109,6 +115,31 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Login success',
             'data' => $userData
+        ]);
+    }
+
+    // get data user
+    public function user(Request $request)
+    {
+        $user = $request->user();
+        if ($user->role === 'driver') {
+            $user->driver = $user->driver;
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Login success',
+            'data' => $user
+        ]);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Logout success',
+            'data' => null
         ]);
     }
 }
