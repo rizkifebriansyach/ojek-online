@@ -90,7 +90,7 @@ class BookingResource extends Resource
                 Tables\Columns\TextColumn::make('customer.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('driver.name')
+                Tables\Columns\TextColumn::make('driver.user.name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('latitude_origin')
@@ -110,12 +110,22 @@ class BookingResource extends Resource
                 Tables\Columns\TextColumn::make('address_destination')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('distance')
+                    ->label('Distance (km)')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price')
-                    ->money()
+                    ->money('idr')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'finding_driver' => 'gray',
+                        'driver_pickup' => 'warning',
+                        'driver_deliver' => 'info',
+                        'arrived' => 'success',
+                        'paid' => 'success',
+                        'cancelled' => 'danger'
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -129,6 +139,7 @@ class BookingResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('time_estimate')
+                    ->label('Time Estimate (second)')
                     ->numeric()
                     ->sortable(),
             ])
