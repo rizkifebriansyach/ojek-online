@@ -17,6 +17,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('price-check', [BookingController::class, 'priceCheck']);
         Route::post('/', [BookingController::class, 'store'])->name('booking');
         Route::post('/{booking}/cancel', [BookingController::class, 'cancel'])->name('booking.cancel');
+        Route::get('/', [BookingController::class, 'getAll'])->name('bookings');
     });
 
     Route::prefix('driver')->group(function () {

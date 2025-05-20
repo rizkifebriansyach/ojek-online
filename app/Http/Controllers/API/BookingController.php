@@ -167,4 +167,46 @@ class BookingController extends Controller
             'data' => null
         ]);
     }
+
+    public function getAll(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'nullable|date_format:Y-m-d',
+            'end_date' => 'nullable|date_format:Y-m-d',
+            'status' => 'nullable|in:finding_driver,driver_pickup,driver_deliver,paid,arrived,cancelled',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error',
+                'data' => ['errors' => $validator->errors()]
+            ], 422);
+        }
+
+        $query = Booking::with(['customer', 'driver'])
+            ->when($request->filled('start_date'), function ($q) use ($request) {
+                return $q->whereDate(['created_at'], '>=', $request->start_date);
+            })
+            ->when($request->filled('end_date'), function ($q) use ($request) {
+                return $q->whereDate(['created_at'], '<=', $request->start_date);
+            })
+            ->when($request->filled('end_date'), function ($q) use ($request) {
+                return $q->where('status', $request->start_date);
+            });
+
+        if (auth()->user()->checkDriver()) {
+            $query->where('driver_id', auth()->user()->driver->id);
+        } elseif (auth()->user()->checkCustomer()) {
+            $query->where('customer_id', auth()->user()->id);
+        }
+
+        $bookings = $query->latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Booking berhasil diambil',
+            'data' => $bookings
+        ]);
+    }
 }
