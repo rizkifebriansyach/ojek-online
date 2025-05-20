@@ -2,8 +2,9 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BookingController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\API\SettingController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::post('register', [AuthController::class, 'register'])->name('register');
@@ -15,7 +16,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('booking')->group(function () {
         Route::post('price-check', [BookingController::class, 'priceCheck']);
         Route::post('/', [BookingController::class, 'store'])->name('booking');
-        Route::post('/{booking}/cancel', [BookingController::class, 'cancel'])->name('booking-cancel');
+        Route::post('/{booking}/cancel', [BookingController::class, 'cancel'])->name('booking.cancel');
+    });
+
+    Route::prefix('driver')->group(function () {
+        Route::get('settings', [SettingController::class, 'index'])->name('driver.settings');
     });
 });
 
