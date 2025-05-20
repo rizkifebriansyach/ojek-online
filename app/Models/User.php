@@ -13,6 +13,8 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasApiTokens;
 
+    protected $appends = ['photo_url'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -63,5 +65,10 @@ class User extends Authenticatable
     public function checkDriver(): bool
     {
         return $this->role === 'driver';
+    }
+
+    public function getPhotoUrlAttribute()
+    {
+        return $this->photo ? url('storage', $this->photo) : null;
     }
 }
