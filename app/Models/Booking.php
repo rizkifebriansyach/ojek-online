@@ -86,4 +86,9 @@ class Booking extends Model
             self::STATUS_PAID, self::STATUS_CANCELLED
         ])->first();
     }
+
+    public function isFindingDriver(): bool
+    {
+        return $this->status === self::STATUS_FINDING_DRIVER;
+    }
 }

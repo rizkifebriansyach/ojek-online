@@ -140,4 +140,31 @@ class BookingController extends Controller
             ]
         ]);
     }
+
+    public function cancel(Booking $booking)
+    {
+        if (auth()->id() !== $booking->customer_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak memiliki hak untuk mengcancel booking ini',
+                'data' => null
+            ], 403);
+        }
+
+        if (!$booking->isFindingDriver()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Booking tidak dapat dibatalkan',
+                'data' => null
+            ], 422);
+        }
+
+        $booking->update(['status' => Booking::STATUS_CANCELLED]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Booking berhasil dibatalkan',
+            'data' => null
+        ]);
+    }
 }

@@ -15,6 +15,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('booking')->group(function () {
         Route::post('price-check', [BookingController::class, 'priceCheck']);
         Route::post('/', [BookingController::class, 'store'])->name('booking');
+        Route::post('/{booking}/cancel', [BookingController::class, 'cancel'])->name('booking-cancel');
     });
 });
 
